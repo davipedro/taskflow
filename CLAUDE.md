@@ -14,6 +14,7 @@
 - The namespace must always be declared at the top of the file, never within class usage
 - Remove unused logs before committing
 - Remove unused dependencies before committing
+- Enums should be in UPPER_SNAKE_CASE
 
 </general-project-guidelines>
 
