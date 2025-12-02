@@ -2,7 +2,8 @@
 
 # General Project Guidelines
 - Always use Skinny Controller
-- Always use Service Pattern
+- Always use Actions + Use Cases OR Service Pattern
+- Use handle() instead of execute() in Actions
 - Always use Repository Pattern with Dependency injection
 - Always validate with Form Requests instead of inline on controller
 - The flow should be: Controller -> Form Request -> Service -> Repository -> Model
