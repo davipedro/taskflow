@@ -29,7 +29,7 @@ enum TaskStatus: string
      */
     public function label(): string
     {
-        if(!$this->isValid()) {
+        if (! $this->isValid()) {
             throw new \InvalidArgumentException('Status inválido');
         }
 
@@ -46,7 +46,7 @@ enum TaskStatus: string
      */
     public function next(): ?self
     {
-        if(!$this->isValid()) {
+        if (! $this->isValid()) {
             throw new \InvalidArgumentException('Status inválido');
         }
 

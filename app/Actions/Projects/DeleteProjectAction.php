@@ -9,8 +9,7 @@ class DeleteProjectAction
 {
     public function __construct(
         protected ProjectRepository $projectRepository
-    ) {
-    }
+    ) {}
 
     public function handle(Project $project): bool
     {

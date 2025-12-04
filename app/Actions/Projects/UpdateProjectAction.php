@@ -9,8 +9,7 @@ class UpdateProjectAction
 {
     public function __construct(
         protected ProjectRepository $projectRepository
-    ) {
-    }
+    ) {}
 
     public function handle(Project $project, array $data): Project
     {
