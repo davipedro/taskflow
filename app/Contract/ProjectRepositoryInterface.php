@@ -3,11 +3,11 @@
 namespace App\Contract;
 
 use App\Models\Project;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
 interface ProjectRepositoryInterface
 {
-    public function findAllByUser(int $id): Collection;
+    public function findAllByUser(int $id): Builder;
 
     public function create(int $id, array $data): Project;
 

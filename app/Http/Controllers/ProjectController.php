@@ -10,22 +10,20 @@ use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
 use App\Models\Project;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
     public function __construct(
 
-    )
-    {}
+    ) {}
 
     /**
      * Display a listing of the resource.
      */
     public function index(GetUserProjectsAction $action)
     {
-        $projects = $action->handle(auth()->id());
+        $projects = $action->handle(auth()->id())->paginate(6);
 
         return Inertia::render('Projects/Index', [
             'projects' => ProjectResource::collection($projects),
@@ -54,7 +52,7 @@ class ProjectController extends Controller
         $project = $action->handle(auth()->id(), $validated);
 
         return redirect()
-            ->route('projects.show', $project)
+            ->route('projects.index', $project)
             ->with('success', 'Projeto criado com sucesso!');
     }
 
