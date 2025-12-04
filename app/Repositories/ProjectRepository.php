@@ -4,22 +4,20 @@ namespace App\Repositories;
 
 use App\Contract\ProjectRepositoryInterface;
 use App\Models\Project;
-use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
 class ProjectRepository implements ProjectRepositoryInterface
 {
     public function __construct(
         private Project $model
-    ) {
-    }
+    ) {}
 
-    public function findAllByUser(int $id): Collection
+    public function findAllByUser(int $id): Builder
     {
         return $this->model
             ->where('user_id', $id)
-            ->with('tasks')
-            ->latest()
-            ->get();
+            ->withCount('tasks')
+            ->latest();
     }
 
     public function create(int $id, array $data): Project
