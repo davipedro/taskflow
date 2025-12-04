@@ -25,9 +25,9 @@ import {
 } from '@/components/ui/sheet';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { BreadcrumbItem, PaginatedResponse, Project } from '@/types';
-import { store, update } from '@/routes/projects';
+import { show, store, update } from '@/routes/projects';
 import { Form, Head, router } from '@inertiajs/vue3';
-import { Plus } from 'lucide-vue-next';
+import { ExternalLink, Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -48,8 +48,10 @@ const isCreateSheetOpen = ref(false);
 const selectedColorCreate = ref('#6366f1');
 
 const isEditDialogOpen = ref(false);
+const isShowingProject = ref(false);
 const selectedColorEdit = ref('#6366f1');
 const editingProject = ref<Project | null>(null);
+const showingProject = ref<Project | null>(null);
 
 const handleCreateProject = () => {
     isCreateSheetOpen.value = true;
@@ -60,6 +62,11 @@ const handleEditProject = (project: Project) => {
     editingProject.value = project;
     selectedColorEdit.value = project.color || '#6366f1';
     isEditDialogOpen.value = true;
+};
+
+const handleShowProject = (project: Project) => {
+    showingProject.value = project;
+    isShowingProject.value = true;
 };
 
 const handleCreateSuccess = () => {
@@ -86,6 +93,15 @@ const handleCloseCreateSheet = () => {
 const handleCloseEditDialog = () => {
     isEditDialogOpen.value = false;
     editingProject.value = null;
+};
+
+const handleCloseShowDialog = () => {
+    isShowingProject.value = false;
+    showingProject.value = null;
+};
+
+const handleOpenFullDetails = (project: Project) => {
+    window.open(show.url(project.id), '_blank');
 };
 </script>
 
@@ -119,6 +135,7 @@ const handleCloseEditDialog = () => {
                         :project="project"
                         :use-events="true"
                         @edit="handleEditProject"
+                        @show="handleShowProject"
                     />
                 </div>
 
@@ -213,6 +230,64 @@ const handleCloseEditDialog = () => {
                 </Form>
             </SheetContent>
         </Sheet>
+
+        <Dialog v-model:open="isShowingProject">
+            <DialogContent v-if="showingProject" class="sm:max-w-[600px]">
+                <DialogHeader>
+                    <DialogTitle>Informações do Projeto</DialogTitle>
+                    <DialogDescription>
+                        Detalhes completos do projeto
+                    </DialogDescription>
+                </DialogHeader>
+
+                <div class="space-y-4">
+                    <div>
+                        <p class="text-sm font-medium text-muted-foreground">
+                            Nome
+                        </p>
+                        <p class="text-lg">{{ showingProject.name }}</p>
+                    </div>
+                    <div v-if="showingProject.description">
+                        <p class="text-sm font-medium text-muted-foreground">
+                            Descrição
+                        </p>
+                        <p class="text-lg">{{ showingProject.description }}</p>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-muted-foreground">
+                            Cor Identificativa
+                        </p>
+                        <div class="flex items-center gap-2">
+                            <div
+                                class="h-8 w-8 rounded border"
+                                :style="{ backgroundColor: showingProject.color }"
+                            />
+                            <span class="font-mono text-sm">{{
+                                showingProject.color
+                            }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-muted-foreground">
+                            Total de Tarefas
+                        </p>
+                        <p class="text-2xl font-bold">
+                            {{ showingProject.tasks_count || 0 }}
+                        </p>
+                    </div>
+                </div>
+
+                <DialogFooter>
+                    <Button variant="outline" @click="handleCloseShowDialog">
+                        Fechar
+                    </Button>
+                    <Button @click="handleOpenFullDetails(showingProject)">
+                        <ExternalLink :size="16" />
+                        Ver Detalhes Completos
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
 
         <Dialog v-model:open="isEditDialogOpen">
             <DialogContent v-if="editingProject" class="sm:max-w-[500px]">

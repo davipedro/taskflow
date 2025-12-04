@@ -38,6 +38,7 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
+    show: [project: Project];
     edit: [project: Project];
     delete: [project: Project];
 }>();
@@ -46,6 +47,14 @@ const page = usePage();
 const isOwner = page.props.auth.user.id === props.project.user_id;
 
 const showDeleteDialog = ref(false);
+
+const handleShow = () => {
+    if (props.useEvents) {
+        emit('show', props.project);
+    } else {
+        router.visit(`/projects/${props.project.id}`);
+    }
+};
 
 const handleEdit = () => {
     if (props.useEvents) {
@@ -64,16 +73,12 @@ const handleDelete = () => {
     });
 };
 
-const handleCardClick = () => {
-    router.visit(`/projects/${props.project.id}`);
-};
 </script>
 
 <template>
     <Card
         class="group cursor-pointer border-l-4 transition-all hover:border-l-8 hover:shadow-lg"
         :style="{ borderColor: project.color || '#6366f1' }"
-        @click="handleCardClick"
     >
         <CardHeader class="flex flex-row items-start justify-between space-y-0 pb-2">
             <h3 class="text-lg font-bold transition-colors group-hover:text-primary">
@@ -86,6 +91,9 @@ const handleCardClick = () => {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
+                    <DropdownMenuItem @click.stop="handleShow">
+                        Ver Detalhes
+                    </DropdownMenuItem>
                     <DropdownMenuItem @click.stop="handleEdit">
                         Editar
                     </DropdownMenuItem>
