@@ -199,8 +199,8 @@ test('user can view their own project', function () {
     $response->assertSuccessful();
     $response->assertInertia(fn ($page) => $page
         ->component('Projects/Show')
-        ->where('project.id', $project->id)
-        ->where('project.name', $project->name)
+        ->where('project.data.id', $project->id)
+        ->where('project.data.name', $project->name)
     );
 });
 
