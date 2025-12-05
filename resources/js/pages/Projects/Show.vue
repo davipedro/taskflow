@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import Heading from '@/components/Heading.vue';
+import ProjectEditDialog from '@/components/common/ProjectEditDialog.vue';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { index } from '@/routes/projects';
 import type { BreadcrumbItem, Project } from '@/types';
-import { edit, index } from '@/routes/projects';
 import { Head, router } from '@inertiajs/vue3';
 import { ArrowLeft, Edit } from 'lucide-vue-next';
+import { computed, ref } from 'vue';
 
 interface Props {
     project: { data: Project };
@@ -14,7 +16,7 @@ interface Props {
 
 const props = defineProps<Props>();
 
-const project = props.project.data;
+const project = computed(() => props.project.data);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -22,15 +24,21 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: index.url(),
     },
     {
-        title: project.name,
-        href: `/projects/${project.id}`,
+        title: props.project.data.name,
+        href: `/projects/${props.project.data.id}`,
     },
 ];
 
 const headerTitle = 'Tarefa';
 
+const isEditDialogOpen = ref(false);
+
 const handleEdit = () => {
-    router.visit(edit.url(project.id));
+    isEditDialogOpen.value = true;
+};
+
+const handleEditSuccess = () => {
+    router.reload({ only: ['project'] });
 };
 
 const handleBack = () => {
@@ -42,9 +50,11 @@ const handleBack = () => {
     <Head :title="project.name" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
+        <div
+            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
+        >
             <div class="flex items-center justify-between">
-                <Heading :title="headerTitle" :description="project.name"/>
+                <Heading :title="headerTitle" :description="project.name" />
                 <div class="flex gap-2">
                     <Button variant="outline" @click="handleBack">
                         <ArrowLeft :size="16" />
@@ -99,5 +109,11 @@ const handleBack = () => {
                 </CardContent>
             </Card>
         </div>
+
+        <ProjectEditDialog
+            v-model:open="isEditDialogOpen"
+            :project="project"
+            @success="handleEditSuccess"
+        />
     </AppLayout>
 </template>

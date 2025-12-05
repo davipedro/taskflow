@@ -4,6 +4,7 @@ import InputError from '@/components/InputError.vue';
 import EmptyState from '@/components/common/EmptyState.vue';
 import Pagination from '@/components/common/Pagination.vue';
 import ProjectCard from '@/components/common/ProjectCard.vue';
+import ProjectEditDialog from '@/components/common/ProjectEditDialog.vue';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -24,8 +25,8 @@ import {
     SheetTitle,
 } from '@/components/ui/sheet';
 import AppLayout from '@/layouts/AppLayout.vue';
+import { show, store } from '@/routes/projects';
 import type { BreadcrumbItem, PaginatedResponse, Project } from '@/types';
-import { show, store, update } from '@/routes/projects';
 import { Form, Head, router } from '@inertiajs/vue3';
 import { ExternalLink, Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
@@ -49,7 +50,6 @@ const selectedColorCreate = ref('#6366f1');
 
 const isEditDialogOpen = ref(false);
 const isShowingProject = ref(false);
-const selectedColorEdit = ref('#6366f1');
 const editingProject = ref<Project | null>(null);
 const showingProject = ref<Project | null>(null);
 
@@ -60,7 +60,6 @@ const handleCreateProject = () => {
 
 const handleEditProject = (project: Project) => {
     editingProject.value = project;
-    selectedColorEdit.value = project.color || '#6366f1';
     isEditDialogOpen.value = true;
 };
 
@@ -81,18 +80,11 @@ const handleCreateSuccess = () => {
 };
 
 const handleEditSuccess = () => {
-    isEditDialogOpen.value = false;
-    toast.success('Projeto atualizado com sucesso!');
     router.reload({ only: ['projects'] });
 };
 
 const handleCloseCreateSheet = () => {
     isCreateSheetOpen.value = false;
-};
-
-const handleCloseEditDialog = () => {
-    isEditDialogOpen.value = false;
-    editingProject.value = null;
 };
 
 const handleCloseShowDialog = () => {
@@ -171,7 +163,9 @@ const handleOpenFullDetails = (project: Project) => {
                     <div class="flex-1 overflow-y-auto">
                         <div class="grid auto-rows-min gap-6 px-4">
                             <div class="space-y-2">
-                                <Label for="create-name">Nome do Projeto *</Label>
+                                <Label for="create-name"
+                                    >Nome do Projeto *</Label
+                                >
                                 <Input
                                     id="create-name"
                                     name="name"
@@ -182,7 +176,9 @@ const handleOpenFullDetails = (project: Project) => {
                             </div>
 
                             <div class="space-y-2">
-                                <Label for="create-description">Descrição</Label>
+                                <Label for="create-description"
+                                    >Descrição</Label
+                                >
                                 <Input
                                     id="create-description"
                                     name="description"
@@ -192,7 +188,9 @@ const handleOpenFullDetails = (project: Project) => {
                             </div>
 
                             <div class="space-y-2">
-                                <Label for="create-color">Cor Identificativa *</Label>
+                                <Label for="create-color"
+                                    >Cor Identificativa *</Label
+                                >
                                 <div class="flex gap-2">
                                     <Input
                                         id="create-color"
@@ -215,7 +213,11 @@ const handleOpenFullDetails = (project: Project) => {
                     </div>
 
                     <SheetFooter class="flex-col gap-2">
-                        <Button type="submit" :disabled="processing" class="w-full">
+                        <Button
+                            type="submit"
+                            :disabled="processing"
+                            class="w-full"
+                        >
                             Criar Projeto
                         </Button>
                         <Button
@@ -260,7 +262,9 @@ const handleOpenFullDetails = (project: Project) => {
                         <div class="flex items-center gap-2">
                             <div
                                 class="h-8 w-8 rounded border"
-                                :style="{ backgroundColor: showingProject.color }"
+                                :style="{
+                                    backgroundColor: showingProject.color,
+                                }"
                             />
                             <span class="font-mono text-sm">{{
                                 showingProject.color
@@ -289,79 +293,10 @@ const handleOpenFullDetails = (project: Project) => {
             </DialogContent>
         </Dialog>
 
-        <Dialog v-model:open="isEditDialogOpen">
-            <DialogContent v-if="editingProject" class="sm:max-w-[500px]">
-                <DialogHeader>
-                    <DialogTitle>Editar Projeto</DialogTitle>
-                    <DialogDescription>
-                        Atualize as informações do seu projeto
-                    </DialogDescription>
-                </DialogHeader>
-
-                <Form
-                    v-bind="update.form(editingProject)"
-                    class="space-y-6"
-                    @success="handleEditSuccess"
-                    v-slot="{ errors, processing }"
-                >
-                    <div class="space-y-2">
-                        <Label for="edit-name">Nome do Projeto *</Label>
-                        <Input
-                            id="edit-name"
-                            name="name"
-                            required
-                            placeholder="Ex: Meu Projeto"
-                            :default-value="editingProject.name"
-                        />
-                        <InputError :message="errors.name" />
-                    </div>
-
-                    <div class="space-y-2">
-                        <Label for="edit-description">Descrição</Label>
-                        <Input
-                            id="edit-description"
-                            name="description"
-                            placeholder="Descrição opcional do projeto"
-                            :default-value="editingProject.description"
-                        />
-                        <InputError :message="errors.description" />
-                    </div>
-
-                    <div class="space-y-2">
-                        <Label for="edit-color">Cor Identificativa *</Label>
-                        <div class="flex gap-2">
-                            <Input
-                                id="edit-color"
-                                name="color"
-                                type="color"
-                                class="h-10 w-20 cursor-pointer"
-                                v-model="selectedColorEdit"
-                            />
-                            <Input
-                                type="text"
-                                placeholder="#6366f1"
-                                class="flex-1 font-mono"
-                                v-model="selectedColorEdit"
-                                readonly
-                            />
-                        </div>
-                        <InputError :message="errors.color" />
-                    </div>
-
-                    <DialogFooter>
-                        <Button
-                            type="button"
-                            variant="outline"
-                            @click="handleCloseEditDialog"
-                        >
-                            Cancelar
-                        </Button>
-                        <Button type="submit" :disabled="processing">
-                            Salvar Alterações
-                        </Button>
-                    </DialogFooter>
-                </Form>
-            </DialogContent>
-        </Dialog>
+        <ProjectEditDialog
+            v-model:open="isEditDialogOpen"
+            :project="editingProject"
+            @success="handleEditSuccess"
+        />
     </AppLayout>
 </template>
