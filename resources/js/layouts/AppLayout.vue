@@ -15,10 +15,6 @@ withDefaults(defineProps<Props>(), {
 <template>
     <AppLayout :breadcrumbs="breadcrumbs">
         <slot />
-        <Toaster
-            position="top-right"
-            rich-colors
-            :duration="1500"
-        />
+        <Toaster position="top-right" rich-colors :duration="1500" />
     </AppLayout>
 </template>

@@ -20,11 +20,15 @@ const props = defineProps<Props>();
 
 <template>
     <Pagination
-        :items-per-page="props.resource.meta?.per_page || props.resource.per_page"
+        :items-per-page="
+            props.resource.meta?.per_page || props.resource.per_page
+        "
         :total="props.resource.meta?.total || props.resource.total"
         :sibling-count="1"
         show-edges
-        :default-page="props.resource.meta?.current_page || props.resource.current_page"
+        :default-page="
+            props.resource.meta?.current_page || props.resource.current_page
+        "
         class="mx-auto"
     >
         <PaginationContent v-slot="{ items }" class="flex items-center gap-1">
@@ -40,7 +44,7 @@ const props = defineProps<Props>();
                 />
                 <div
                     v-else
-                    class="inline-flex h-10 items-center justify-center gap-1 whitespace-nowrap rounded-md px-2.5 text-sm font-medium opacity-0 sm:pr-2.5"
+                    class="inline-flex h-10 items-center justify-center gap-1 rounded-md px-2.5 text-sm font-medium whitespace-nowrap opacity-0 sm:pr-2.5"
                 >
                     <span class="hidden sm:block">Anterior</span>
                 </div>
@@ -77,7 +81,7 @@ const props = defineProps<Props>();
                 />
                 <div
                     v-else
-                    class="inline-flex h-10 items-center justify-center gap-1 whitespace-nowrap rounded-md px-2.5 text-sm font-medium opacity-0 sm:pr-2.5"
+                    class="inline-flex h-10 items-center justify-center gap-1 rounded-md px-2.5 text-sm font-medium whitespace-nowrap opacity-0 sm:pr-2.5"
                 >
                     <span class="hidden sm:block">Próximo</span>
                 </div>

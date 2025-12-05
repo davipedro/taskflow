@@ -6,8 +6,8 @@ import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { BreadcrumbItem, Project } from '@/types';
 import { update } from '@/routes/projects';
+import type { BreadcrumbItem, Project } from '@/types';
 import { Form, Head, router } from '@inertiajs/vue3';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
@@ -17,11 +17,6 @@ interface Props {
 }
 
 const props = defineProps<Props>();
-
-console.log('project id:', props.project.id);
-console.log('project:', props.project);
-console.log('typeof id:', typeof props.project.id);
-console.log('wayfinder input:', props.project.id);
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -45,7 +40,7 @@ const selectedColor = ref(props.project.color || '#6366f1');
     <Head :title="`Editar ${props.project.name}`" />
     <AppLayout :breadcrumbs="breadcrumbs">
         <div class="mx-auto max-w-2xl space-y-6">
-            <Heading title="Editar Projeto"/>
+            <Heading title="Editar Projeto" />
 
             <Card>
                 <CardHeader>

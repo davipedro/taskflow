@@ -72,7 +72,6 @@ const handleDelete = () => {
         },
     });
 };
-
 </script>
 
 <template>
@@ -80,8 +79,12 @@ const handleDelete = () => {
         class="group cursor-pointer border-l-4 transition-all hover:border-l-8 hover:shadow-lg"
         :style="{ borderColor: project.color || '#6366f1' }"
     >
-        <CardHeader class="flex flex-row items-start justify-between space-y-0 pb-2">
-            <h3 class="text-lg font-bold transition-colors group-hover:text-primary">
+        <CardHeader
+            class="flex flex-row items-start justify-between space-y-0 pb-2"
+        >
+            <h3
+                class="text-lg font-bold transition-colors group-hover:text-primary"
+            >
                 {{ project.name }}
             </h3>
             <DropdownMenu v-if="isOwner" @click.stop>
