@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Actions\Projects\CreateProjectAction;
 use App\Actions\Projects\DeleteProjectAction;
 use App\Actions\Projects\GetUserProjectsAction;
+use App\Actions\Projects\StoreProjectAction;
 use App\Actions\Projects\UpdateProjectAction;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
@@ -23,7 +23,7 @@ class ProjectController extends Controller
      */
     public function index(GetUserProjectsAction $action)
     {
-        $projects = $action->handle(auth()->id())->paginate(6);
+        $projects = $action->handle(auth()->id());
 
         return Inertia::render('Projects/Index', [
             'projects' => ProjectResource::collection($projects),
@@ -43,7 +43,7 @@ class ProjectController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreProjectRequest $request, CreateProjectAction $action)
+    public function store(StoreProjectRequest $request, StoreProjectAction $action)
     {
         $this->authorize('create', Project::class);
 
@@ -91,7 +91,7 @@ class ProjectController extends Controller
 
         $validated = $request->validated();
 
-        $project = $action->handle($project, $validated);
+        $action->handle($project, $validated);
 
         return back()->with('success', 'Projeto atualizado com sucesso!');
     }

@@ -3,7 +3,7 @@
 namespace App\Actions\Projects;
 
 use App\Repositories\ProjectRepository;
-use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class GetUserProjectsAction
 {
@@ -11,8 +11,10 @@ class GetUserProjectsAction
         protected ProjectRepository $projectRepository
     ) {}
 
-    public function handle(int $userId): Builder
+    public function handle(int $userId, int $perPage = 6): LengthAwarePaginator
     {
-        return $this->projectRepository->findAllByUser($userId);
+        return $this->projectRepository
+            ->findAllByUser($userId)
+            ->paginate($perPage);
     }
 }

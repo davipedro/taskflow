@@ -16,8 +16,7 @@ class ProjectRepository implements ProjectRepositoryInterface
     {
         return $this->model
             ->where('user_id', $id)
-            ->withCount('tasks')
-            ->latest();
+            ->withCount('tasks');
     }
 
     public function create(int $id, array $data): Project
