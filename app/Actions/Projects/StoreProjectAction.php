@@ -5,7 +5,7 @@ namespace App\Actions\Projects;
 use App\Models\Project;
 use App\Repositories\ProjectRepository;
 
-class CreateProjectAction
+class StoreProjectAction
 {
     public function __construct(
         protected ProjectRepository $projectRepository
