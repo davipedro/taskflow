@@ -91,9 +91,9 @@ class Task extends Model
             && $this->status !== TaskStatus::COMPLETED;
     }
 
-    public function canTransitionStatus(): bool
+    public function canTransitionStatus(TaskStatus $nextStatus): bool
     {
-        return $this->status->canTransition();
+        return $this->status->next() === $nextStatus;
     }
 
     public function transitionToNextStatus(): void

@@ -2,6 +2,8 @@
 
 namespace App\Actions\Tasks;
 
+use App\Enums\TaskStatus;
+use App\Exceptions\StatusTransitionNotAllowedException;
 use App\Models\Task;
 use App\Repositories\TaskRepository;
 
@@ -11,8 +13,17 @@ class UpdateTaskStatusAction
         protected TaskRepository $taskRepository
     ) {}
 
-    public function handle(Task $task, array $data): Task
+    /**
+     * @throws StatusTransitionNotAllowedException
+     */
+    public function handle(Task $task, string $nextStatus): Task
     {
-        return $this->taskRepository->update($task, $data);
+        $nextStatus = TaskStatus::from($nextStatus);
+
+        if (! $task->canTransitionStatus($nextStatus)) {
+            throw new StatusTransitionNotAllowedException;
+        }
+
+        return $this->taskRepository->updateStatus($task, $nextStatus);
     }
 }
