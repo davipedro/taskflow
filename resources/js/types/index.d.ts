@@ -28,6 +28,21 @@ export interface Project {
     updated_at: string;
 }
 
+export interface Task {
+    id: number;
+    title: string;
+    description: string | null;
+    status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED';
+    priority: 'LOW' | 'MEDIUM' | 'HIGH';
+    deadline: string | null;
+    completed_at: string | null;
+    project_id: number;
+    user_id: number;
+    created_at: string;
+    updated_at: string;
+    deleted_at: string | null;
+}
+
 export interface PaginatedResponse<T = Task | null> {
     current_page: number;
     data: T[];

@@ -6,14 +6,6 @@ import Pagination from '@/components/common/Pagination.vue';
 import ProjectCard from '@/components/common/ProjectCard.vue';
 import ProjectEditDialog from '@/components/common/ProjectEditDialog.vue';
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-} from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -28,9 +20,8 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import { show, store } from '@/routes/projects';
 import type { BreadcrumbItem, PaginatedResponse, Project } from '@/types';
 import { Form, Head, router } from '@inertiajs/vue3';
-import { ExternalLink, Plus } from 'lucide-vue-next';
+import { Plus } from 'lucide-vue-next';
 import { ref } from 'vue';
-import { toast } from 'vue-sonner';
 
 interface Props {
     projects: PaginatedResponse<Project>;
@@ -49,9 +40,7 @@ const isCreateSheetOpen = ref(false);
 const selectedColorCreate = ref('#6366f1');
 
 const isEditDialogOpen = ref(false);
-const isShowingProject = ref(false);
 const editingProject = ref<Project | null>(null);
-const showingProject = ref<Project | null>(null);
 
 const handleCreateProject = () => {
     isCreateSheetOpen.value = true;
@@ -63,16 +52,10 @@ const handleEditProject = (project: Project) => {
     isEditDialogOpen.value = true;
 };
 
-const handleShowProject = (project: Project) => {
-    showingProject.value = project;
-    isShowingProject.value = true;
-};
-
 const handleCreateSuccess = () => {
     isCreateSheetOpen.value = false;
-    toast.success('Projeto criado com sucesso!');
     setTimeout(() => {
-        router.visit('/projects', {
+        router.reload({
             preserveState: false,
             preserveScroll: true,
         });
@@ -85,15 +68,6 @@ const handleEditSuccess = () => {
 
 const handleCloseCreateSheet = () => {
     isCreateSheetOpen.value = false;
-};
-
-const handleCloseShowDialog = () => {
-    isShowingProject.value = false;
-    showingProject.value = null;
-};
-
-const handleOpenFullDetails = (project: Project) => {
-    window.open(show.url(project.id), '_blank');
 };
 </script>
 
@@ -126,8 +100,8 @@ const handleOpenFullDetails = (project: Project) => {
                         :key="project.id"
                         :project="project"
                         :use-events="true"
+                        @show="router.visit(show(project.id))"
                         @edit="handleEditProject"
-                        @show="handleShowProject"
                     />
                 </div>
 
@@ -232,66 +206,6 @@ const handleOpenFullDetails = (project: Project) => {
                 </Form>
             </SheetContent>
         </Sheet>
-
-        <Dialog v-model:open="isShowingProject">
-            <DialogContent v-if="showingProject" class="sm:max-w-[600px]">
-                <DialogHeader>
-                    <DialogTitle>Informações do Projeto</DialogTitle>
-                    <DialogDescription>
-                        Detalhes completos do projeto
-                    </DialogDescription>
-                </DialogHeader>
-
-                <div class="space-y-4">
-                    <div>
-                        <p class="text-sm font-medium text-muted-foreground">
-                            Nome
-                        </p>
-                        <p class="text-lg">{{ showingProject.name }}</p>
-                    </div>
-                    <div v-if="showingProject.description">
-                        <p class="text-sm font-medium text-muted-foreground">
-                            Descrição
-                        </p>
-                        <p class="text-lg">{{ showingProject.description }}</p>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-muted-foreground">
-                            Cor Identificativa
-                        </p>
-                        <div class="flex items-center gap-2">
-                            <div
-                                class="h-8 w-8 rounded border"
-                                :style="{
-                                    backgroundColor: showingProject.color,
-                                }"
-                            />
-                            <span class="font-mono text-sm">{{
-                                showingProject.color
-                            }}</span>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-muted-foreground">
-                            Total de Tarefas
-                        </p>
-                        <p class="text-2xl font-bold">
-                            {{ showingProject.tasks_count || 0 }}
-                        </p>
-                    </div>
-                </div>
-
-                <DialogFooter>
-                    <Button variant="outline" @click="handleCloseShowDialog">
-                        Fechar
-                    </Button>
-                    <Button @click="handleOpenFullDetails(showingProject)">
-                        <ExternalLink :size="16" />
-                        Ver Detalhes Completos
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
 
         <ProjectEditDialog
             v-model:open="isEditDialogOpen"
