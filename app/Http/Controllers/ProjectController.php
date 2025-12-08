@@ -6,10 +6,13 @@ use App\Actions\Projects\DeleteProjectAction;
 use App\Actions\Projects\GetUserProjectsAction;
 use App\Actions\Projects\StoreProjectAction;
 use App\Actions\Projects\UpdateProjectAction;
+use App\Actions\Tasks\GetProjectTasksAction;
 use App\Http\Requests\StoreProjectRequest;
 use App\Http\Requests\UpdateProjectRequest;
 use App\Http\Resources\ProjectResource;
+use App\Http\Resources\TaskResource;
 use App\Models\Project;
+use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class ProjectController extends Controller
@@ -51,22 +54,22 @@ class ProjectController extends Controller
 
         $project = $action->handle(auth()->id(), $validated);
 
-        return redirect()
-            ->route('projects.index', $project)
-            ->with('success', 'Projeto criado com sucesso!');
+        return back()->with('success', 'Projeto criado com sucesso!');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Project $project)
+    public function show(Project $project, Request $request, GetProjectTasksAction $action)
     {
         $this->authorize('view', $project);
+        $requestedPage = (int) $request->query('page', 1);
 
-        $project->loadCount('tasks');
+        $projectTasks = $action->handle($project, $requestedPage);
 
         return Inertia::render('Projects/Show', [
             'project' => new ProjectResource($project),
+            'tasks' => Inertia::defer(fn () => TaskResource::collection($projectTasks)),
         ]);
     }
 
