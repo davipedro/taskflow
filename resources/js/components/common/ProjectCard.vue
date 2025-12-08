@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import type { Project } from '@/types';
 import { router, usePage } from '@inertiajs/vue3';
-import { CheckSquare, MoreHorizontal } from 'lucide-vue-next';
+import { ArrowRight, CheckSquare, MoreHorizontal } from 'lucide-vue-next';
 import { ref } from 'vue';
 import { toast } from 'vue-sonner';
 
@@ -76,8 +76,8 @@ const handleDelete = () => {
 
 <template>
     <Card
-        class="group cursor-pointer border-l-4 transition-all hover:border-l-8 hover:shadow-lg"
-        :style="{ borderColor: project.color || '#6366f1' }"
+        class="group hover:shadow-lg hover:border-[var(--border-hover)] transition-colors"
+        :style="{ '--border-hover': props.project.color || '#6366f1' }"
     >
         <CardHeader
             class="flex flex-row items-start justify-between space-y-0 pb-2"
@@ -94,15 +94,16 @@ const handleDelete = () => {
                     </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                    <DropdownMenuItem @click.stop="handleShow">
-                        Ver Detalhes
-                    </DropdownMenuItem>
-                    <DropdownMenuItem @click.stop="handleEdit">
+                    <DropdownMenuItem
+                        class="cursor-pointer"
+                        @click.stop="handleEdit"
+                    >
                         Editar
                     </DropdownMenuItem>
                     <DropdownMenuItem
+                        class="cursor-pointer"
                         @click.stop="showDeleteDialog = true"
-                        class="text-destructive"
+                        data-variant="destructive"
                     >
                         Excluir
                     </DropdownMenuItem>
@@ -125,10 +126,18 @@ const handleDelete = () => {
                 <CheckSquare :size="14" />
                 <span>{{ project.tasks_count }} tarefa(s)</span>
             </div>
+            <Button
+                variant="ghost"
+                size="sm"
+                @click="handleShow"
+                class="gap-1 cursor-pointer"
+            >
+                Ver detalhes
+                <ArrowRight :size="14" />
+            </Button>
         </CardFooter>
     </Card>
 
-    <!-- Alert Dialog de Confirmação de Exclusão -->
     <AlertDialog v-model:open="showDeleteDialog">
         <AlertDialogContent @click.stop>
             <AlertDialogHeader>
