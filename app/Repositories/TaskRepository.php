@@ -42,6 +42,13 @@ class TaskRepository
         return $task->fresh();
     }
 
+    public function updateStatus(Task $task, $status): Task
+    {
+        $task->update(['status' => $status]);
+
+        return $task->fresh();
+    }
+
     public function delete(Task $task): bool
     {
         return $task->delete();
