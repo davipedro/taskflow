@@ -9,6 +9,7 @@ use App\Actions\Tasks\UpdateTaskAction;
 use App\Actions\Tasks\UpdateTaskPriorityAction;
 use App\Actions\Tasks\UpdateTaskStatusAction;
 use App\DTOs\TaskFilterDTO;
+use App\Exceptions\StatusTransitionNotAllowedException;
 use App\Http\Requests\StoreTaskRequest;
 use App\Http\Requests\UpdateTaskPriorityRequest;
 use App\Http\Requests\UpdateTaskRequest;
@@ -57,9 +58,7 @@ class TaskController extends Controller
 
         $task = $action->handle(auth()->id(), $validated);
 
-        return redirect()
-            ->route('tasks.index', $task)
-            ->with('success', 'Tarefa criada com sucesso!');
+        return back()->with('message', 'Tarefa criada com sucesso!');
     }
 
     /**
@@ -102,6 +101,8 @@ class TaskController extends Controller
 
     /**
      * Update task status.
+     *
+     * @throws StatusTransitionNotAllowedException
      */
     public function updateStatus(UpdateTaskStatusRequest $request, Task $task, UpdateTaskStatusAction $action)
     {
@@ -109,7 +110,7 @@ class TaskController extends Controller
 
         $validated = $request->validated();
 
-        $action->handle($task, $validated);
+        $action->handle($task, $validated['status']);
 
         return back()->with('success', 'Status atualizado com sucesso!');
     }
@@ -137,8 +138,6 @@ class TaskController extends Controller
 
         $action->handle($task);
 
-        return redirect()
-            ->route('tasks.index')
-            ->with('success', 'Tarefa deletada com sucesso!');
+        return back()->with('message', 'Tarefa deletada com sucesso!');
     }
 }
