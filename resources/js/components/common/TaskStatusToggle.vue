@@ -13,6 +13,10 @@ interface Props {
 
 const props = defineProps<Props>();
 
+const emit = defineEmits<{
+    change: [];
+}>();
+
 const getStatusLabel = (status: Task['status']) => {
     const labels = {
         PENDING: 'Pendente',
@@ -51,6 +55,7 @@ const handleNextStatus = () => {
     router.patch(updateStatus(props.task.id).url, { status: nextStatus }, {
         onSuccess: () => {
             toast.success(`Status atualizado para ${getStatusLabel(nextStatus)}`);
+            emit('change');
         },
         onError: () => {
             toast.error('Erro ao atualizar o status da tarefa.');

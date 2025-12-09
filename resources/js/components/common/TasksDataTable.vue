@@ -19,6 +19,13 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import type { Task } from '@/types';
 import { Form, router } from '@inertiajs/vue3';
@@ -51,13 +58,23 @@ const isEditTaskSheetOpen = ref(false);
 const editingTask = ref<Task | null>(null);
 const selectedPriority = ref<Task['priority']>('MEDIUM');
 
-const handleEditClick = (task: Task) => {
+const showDetailsDialog = ref(false);
+const taskDetails = ref<Task | null>(null);
+
+const handleRowClick = (task: Task) => {
+    taskDetails.value = task;
+    showDetailsDialog.value = true;
+};
+
+const handleEditClick = (task: Task, event: Event) => {
+    event.stopPropagation();
     editingTask.value = task;
     selectedPriority.value = task.priority;
     isEditTaskSheetOpen.value = true;
 };
 
-const handleDeleteClick = (task: Task) => {
+const handleDeleteClick = (task: Task, event: Event) => {
+    event.stopPropagation();
     taskToDelete.value = task;
     showDeleteDialog.value = true;
 };
@@ -88,6 +105,12 @@ const handleEditTaskSuccess = () => {
 const handleCloseEditTaskSheet = () => {
     isEditTaskSheetOpen.value = false;
     editingTask.value = null;
+};
+
+const handleStatusChange = () => {
+    isEditTaskSheetOpen.value = false;
+    editingTask.value = null;
+    emit('refresh');
 };
 
 const getStatusLabel = (status: Task['status']) => {
@@ -154,7 +177,12 @@ const isOverdue = (task: Task) => {
                 <TableEmpty v-if="tasks.length === 0" :colspan="6">
                     Nenhuma tarefa encontrada
                 </TableEmpty>
-                <TableRow v-for="task in tasks" :key="task.id">
+                <TableRow
+                    v-for="task in tasks"
+                    :key="task.id"
+                    class="cursor-pointer hover:bg-muted/50"
+                    @click="handleRowClick(task)"
+                >
                     <TableCell class="font-medium">
                         <div>
                             <p class="font-semibold">{{ task.title }}</p>
@@ -194,7 +222,7 @@ const isOverdue = (task: Task) => {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                @click="handleEditClick(task)"
+                                @click="(e) => handleEditClick(task, e)"
                                 class="h-8 w-8 text-muted-foreground hover:text-primary"
                             >
                                 <Pencil :size="16" />
@@ -202,7 +230,7 @@ const isOverdue = (task: Task) => {
                             <Button
                                 variant="ghost"
                                 size="icon"
-                                @click="handleDeleteClick(task)"
+                                @click="(e) => handleDeleteClick(task, e)"
                                 class="h-8 w-8 text-muted-foreground hover:text-destructive"
                             >
                                 <Trash2 :size="16" />
@@ -213,6 +241,74 @@ const isOverdue = (task: Task) => {
             </TableBody>
         </Table>
     </div>
+
+    <!--DETAILS DIALOG-->
+
+    <Dialog v-model:open="showDetailsDialog">
+        <DialogContent v-if="taskDetails" class="max-w-2xl">
+            <DialogHeader>
+                <DialogTitle class="text-2xl">{{ taskDetails.title }}</DialogTitle>
+                <DialogDescription v-if="taskDetails.description">
+                    {{ taskDetails.description }}
+                </DialogDescription>
+            </DialogHeader>
+
+            <div class="grid gap-6 py-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-medium text-muted-foreground">Status</h4>
+                        <Badge :variant="getStatusVariant(taskDetails.status)">
+                            {{ getStatusLabel(taskDetails.status) }}
+                        </Badge>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-medium text-muted-foreground">Prioridade</h4>
+                        <Badge :variant="getPriorityVariant(taskDetails.priority)">
+                            {{ getPriorityLabel(taskDetails.priority) }}
+                        </Badge>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-medium text-muted-foreground">Prazo</h4>
+                        <p
+                            class="text-sm"
+                            :class="{
+                                'text-destructive font-semibold': isOverdue(taskDetails),
+                            }"
+                        >
+                            {{ formatDate(taskDetails.deadline) }}
+                        </p>
+                    </div>
+
+                    <div class="space-y-2">
+                        <h4 class="text-sm font-medium text-muted-foreground">
+                            {{ taskDetails.status === 'COMPLETED' ? 'Concluída em' : 'Criada em' }}
+                        </h4>
+                        <p class="text-sm">
+                            {{ taskDetails.status === 'COMPLETED' && taskDetails.completed_at
+                                ? formatDate(taskDetails.completed_at)
+                                : formatDate(taskDetails.created_at)
+                            }}
+                        </p>
+                    </div>
+                </div>
+
+                <div v-if="taskDetails.project" class="space-y-2">
+                    <h4 class="text-sm font-medium text-muted-foreground">Projeto</h4>
+                    <div class="flex items-center gap-2">
+                        <div
+                            class="h-3 w-3 rounded-full"
+                            :style="{ backgroundColor: taskDetails.project.color }"
+                        />
+                        <p class="text-sm">{{ taskDetails.project.name }}</p>
+                    </div>
+                </div>
+            </div>
+        </DialogContent>
+    </Dialog>
 
     <!--DELETE-->
 
@@ -284,7 +380,7 @@ const isOverdue = (task: Task) => {
 
                         <div class="space-y-2">
                             <Label>Status</Label>
-                            <TaskStatusToggle :task="editingTask" @change="emit('refresh')" />
+                            <TaskStatusToggle :task="editingTask" @change="handleStatusChange" />
                         </div>
 
                         <div class="space-y-2">
