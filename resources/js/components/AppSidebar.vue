@@ -13,9 +13,10 @@ import {
 } from '@/components/ui/sidebar';
 import { dashboard } from '@/routes';
 import { index as projects } from '@/routes/projects';
+import { index as tasks } from '@/routes/tasks';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, FolderKanban, LayoutGrid } from 'lucide-vue-next';
+import { BookOpen, Folder, FolderKanban, LayoutGrid, CheckSquare } from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
@@ -28,6 +29,11 @@ const mainNavItems: NavItem[] = [
         title: 'Meus Projetos',
         href: projects(),
         icon: FolderKanban,
+    },
+    {
+        title: 'Minhas Tarefas',
+        href: tasks(),
+        icon: CheckSquare,
     },
 ];
 
