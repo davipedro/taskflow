@@ -57,6 +57,78 @@ class DatabaseSeeder extends Seeder
         ]);
 
         Task::factory()->forUser($demoUser)->forProject($project1)->create([
+            'title' => 'Update content for About Us page',
+            'description' => null,
+            'status' => TaskStatus::PENDING,
+            'priority' => TaskPriority::LOW,
+            'deadline' => now()->addDays(14),
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->forUser($demoUser)->forProject($project1)->create([
+            'title' => 'Test cross-browser compatibility',
+            'description' => 'Ensure the website works correctly on all major browsers',
+            'status' => TaskStatus::PENDING,
+            'priority' => TaskPriority::MEDIUM,
+            'deadline' => now()->addDays(10),
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->forUser($demoUser)->forProject($project1)->create([
+            'title' => 'Set up SEO best practices',
+            'description' => 'Implement meta tags, alt attributes, and sitemap.xml',
+            'status' => TaskStatus::IN_PROGRESS,
+            'priority' => TaskPriority::HIGH,
+            'deadline' => now()->addDays(4),
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->forUser($demoUser)->forProject($project1)->create([
+            'title' => 'Conduct user testing sessions',
+            'description' => 'Organize sessions to gather feedback on the new design',
+            'status' => TaskStatus::PENDING,
+            'priority' => TaskPriority::MEDIUM,
+            'deadline' => now()->addDays(12),
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->forUser($demoUser)->forProject($project1)->create([
+            'title' => 'Migrate content from old site',
+            'description' => 'Transfer all blog posts and pages to the new website',
+            'status' => TaskStatus::COMPLETED,
+            'priority' => TaskPriority::HIGH,
+            'deadline' => now()->subDays(2),
+            'completed_at' => now()->subDay(),
+        ]);
+
+        Task::factory()->forUser($demoUser)->forProject($project1)->create([
+            'title' => 'Set up Google Analytics',
+            'description' => 'Integrate Google Analytics to track website traffic and user behavior',
+            'status' => TaskStatus::IN_PROGRESS,
+            'priority' => TaskPriority::MEDIUM,
+            'deadline' => now()->addDays(6),
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->forUser($demoUser)->forProject($project1)->create([
+            'title' => 'Create blog post templates',
+            'description' => null,
+            'status' => TaskStatus::PENDING,
+            'priority' => TaskPriority::LOW,
+            'deadline' => now()->addDays(20),
+            'completed_at' => null,
+        ]);
+
+        Task::factory()->forUser($demoUser)->forProject($project1)->create([
+            'title' => 'Set up email newsletter signup',
+            'description' => 'Integrate Mailchimp signup form on the website',
+            'status' => TaskStatus::COMPLETED,
+            'priority' => TaskPriority::MEDIUM,
+            'deadline' => now()->subDays(7),
+            'completed_at' => now()->subDays(5),
+        ]);
+
+        Task::factory()->forUser($demoUser)->forProject($project1)->create([
             'title' => 'Optimize images for web',
             'description' => 'Compress and convert images to WebP format for better performance',
             'status' => TaskStatus::PENDING,
