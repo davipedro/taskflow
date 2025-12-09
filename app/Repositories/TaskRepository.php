@@ -61,4 +61,22 @@ class TaskRepository
             ->where('id', $taskId)
             ->first();
     }
+
+    public function getStatsByUser(int $userId): array
+    {
+        return $this->model
+            ->where('user_id', $userId)
+            ->selectRaw('status, COUNT(*) as count')
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+    }
+
+    public function getRecentByUser(int $userId, int $limit = 5): Builder
+    {
+        return $this->model
+            ->where('user_id', $userId)
+            ->latest()
+            ->limit($limit);
+    }
 }
