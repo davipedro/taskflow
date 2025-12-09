@@ -44,7 +44,13 @@ class TaskRepository
 
     public function updateStatus(Task $task, $status): Task
     {
-        $task->update(['status' => $status]);
+        $data = ['status' => $status];
+
+        if ($status->value === 'COMPLETED') {
+            $data['completed_at'] = now();
+        }
+
+        $task->update($data);
 
         return $task->fresh();
     }
