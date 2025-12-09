@@ -1,9 +1,21 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
+import TaskStatsCards from '@/components/common/TaskStatsCards.vue';
+import TasksDataTable from '@/components/common/TasksDataTable.vue';
 import { dashboard } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/vue3';
-import PlaceholderPattern from '../components/PlaceholderPattern.vue';
+import { type BreadcrumbItem, type Task } from '@/types';
+import { Head, router } from '@inertiajs/vue3';
+
+interface Props {
+    stats: {
+        pending: number;
+        in_progress: number;
+        completed: number;
+    };
+    recentTasks: Task[];
+}
+
+const props = defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -11,36 +23,32 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard().url,
     },
 ];
+
+const handleRefresh = () => {
+    router.reload({ only: ['stats', 'recentTasks'] });
+};
 </script>
 
 <template>
     <Head title="Dashboard" />
 
     <AppLayout :breadcrumbs="breadcrumbs">
-        <div
-            class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
-        >
-            <div class="grid auto-rows-min gap-4 md:grid-cols-3">
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
+        <div class="flex h-full flex-1 flex-col gap-6 rounded-xl p-4 md:p-6">
+            <TaskStatsCards :stats="stats" />
+
+            <div class="space-y-4">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold tracking-tight">
+                            Tarefas Recentes
+                        </h2>
+                        <p class="text-sm text-muted-foreground">
+                            Suas 5 tarefas mais recentes
+                        </p>
+                    </div>
                 </div>
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
-                </div>
-                <div
-                    class="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border"
-                >
-                    <PlaceholderPattern />
-                </div>
-            </div>
-            <div
-                class="relative min-h-[100vh] flex-1 rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border"
-            >
-                <PlaceholderPattern />
+
+                <TasksDataTable :tasks="recentTasks" @refresh="handleRefresh" />
             </div>
         </div>
     </AppLayout>
