@@ -15,7 +15,7 @@ interface Props {
     recentTasks: Task[];
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
