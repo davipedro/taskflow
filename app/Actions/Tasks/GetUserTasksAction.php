@@ -16,6 +16,7 @@ class GetUserTasksAction
     {
         return $this->taskRepository
             ->findAllByUser($userId, $filters)
-            ->paginate($perPage);
+            ->paginate($perPage)
+            ->withQueryString();
     }
 }
