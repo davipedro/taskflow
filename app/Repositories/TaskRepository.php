@@ -14,7 +14,10 @@ class TaskRepository
 
     public function findAllByUser(int $id, TaskFilterDTO $filters): Builder
     {
-        $query = $this->model->where('user_id', $id);
+        $query = $this->model
+            ->with('project')
+            ->whereHas('project')
+            ->where('user_id', $id);
 
         if ($filters->status) {
             $query->where('status', $filters->status);
@@ -24,7 +27,17 @@ class TaskRepository
             $query->where('priority', $filters->priority);
         }
 
-        return $query->orderBy($filters->sortBy, $filters->sortOrder);
+        if ($filters->sortBy === 'priority') {
+            $query->orderByRaw("CASE
+                WHEN priority = 'LOW' THEN 1
+                WHEN priority = 'MEDIUM' THEN 2
+                WHEN priority = 'HIGH' THEN 3
+            END {$filters->sortOrder}");
+        } else {
+            $query->orderBy($filters->sortBy, $filters->sortOrder);
+        }
+
+        return $query;
     }
 
     public function create(int $id, array $data): Task
@@ -81,6 +94,8 @@ class TaskRepository
     public function getRecentByUser(int $userId, int $limit = 5): Builder
     {
         return $this->model
+            ->with('project')
+            ->whereHas('project')
             ->where('user_id', $userId)
             ->latest()
             ->limit($limit);
