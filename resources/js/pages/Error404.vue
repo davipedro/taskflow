@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import ErrorLayout from '@/layouts/ErrorLayout.vue';
 import { router } from '@inertiajs/vue3';
-import { FileQuestion, Home, ArrowLeft } from 'lucide-vue-next';
+import { ArrowLeft, FileQuestion, Home } from 'lucide-vue-next';
 
 const goBack = () => {
     if (window.history.length > 1) {
@@ -20,9 +20,7 @@ const goHome = () => {
 
 <template>
     <ErrorLayout title="Página Não Encontrada">
-        <div
-            class="flex min-h-screen flex-col items-center justify-center p-4"
-        >
+        <div class="flex min-h-screen flex-col items-center justify-center p-4">
             <Card class="w-full max-w-md p-8">
                 <div class="flex flex-col items-center space-y-6 text-center">
                     <div
@@ -43,11 +41,19 @@ const goHome = () => {
                     </div>
 
                     <div class="flex w-full flex-col gap-3">
-                        <Button @click="goBack" variant="default" class="w-full">
+                        <Button
+                            @click="goBack"
+                            variant="default"
+                            class="w-full"
+                        >
                             <ArrowLeft :size="16" />
                             Voltar
                         </Button>
-                        <Button @click="goHome" variant="outline" class="w-full">
+                        <Button
+                            @click="goHome"
+                            variant="outline"
+                            class="w-full"
+                        >
                             <Home :size="16" />
                             Ir para Projetos
                         </Button>

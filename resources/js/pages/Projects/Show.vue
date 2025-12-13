@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import Heading from '@/components/Heading.vue';
 import Pagination from '@/components/common/Pagination.vue';
-import TasksDataTable from '@/components/common/TasksDataTable.vue';
 import ProjectEditDialog from '@/components/common/ProjectEditDialog.vue';
+import TasksDataTable from '@/components/common/TasksDataTable.vue';
+import Heading from '@/components/Heading.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import {
     Select,
     SelectContent,
@@ -24,14 +23,15 @@ import {
     SheetHeader,
     SheetTitle,
 } from '@/components/ui/sheet';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { index, show } from '@/routes/projects';
 import { store as storeTask } from '@/routes/projects/tasks';
 import type { BreadcrumbItem, PaginatedResponse, Project, Task } from '@/types';
 import { Deferred, Form, Head, router } from '@inertiajs/vue3';
 import { ArrowLeft, Edit, Plus } from 'lucide-vue-next';
-import { computed, handleError, ref } from 'vue';
-import { Card } from '@/components/ui/card';
+import { computed, ref } from 'vue';
 import { toast } from 'vue-sonner';
 
 interface Props {
@@ -124,26 +124,47 @@ const handleTaskRefresh = () => {
                     <div class="grid gap-6 md:grid-cols-2">
                         <div class="space-y-4">
                             <div class="flex items-center gap-2">
-                                <span class="text-sm font-medium text-muted-foreground">Nome:</span>
-                                <span class="text-lg font-semibold">{{ project.name }}</span>
+                                <span
+                                    class="text-sm font-medium text-muted-foreground"
+                                    >Nome:</span
+                                >
+                                <span class="text-lg font-semibold">{{
+                                    project.name
+                                }}</span>
                             </div>
                             <div v-if="project.description">
-                                <p class="text-sm font-medium text-muted-foreground mb-2">Descrição:</p>
-                                <p class="text-base">{{ project.description }}</p>
+                                <p
+                                    class="mb-2 text-sm font-medium text-muted-foreground"
+                                >
+                                    Descrição:
+                                </p>
+                                <p class="text-base">
+                                    {{ project.description }}
+                                </p>
                             </div>
                         </div>
                         <div class="space-y-4">
                             <div class="flex items-center gap-2">
-                                <span class="text-sm font-medium text-muted-foreground">Cor:</span>
+                                <span
+                                    class="text-sm font-medium text-muted-foreground"
+                                    >Cor:</span
+                                >
                                 <div
                                     class="h-6 w-6 rounded border"
                                     :style="{ backgroundColor: project.color }"
                                 />
-                                <span class="font-mono text-sm">{{ project.color }}</span>
+                                <span class="font-mono text-sm">{{
+                                    project.color
+                                }}</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="text-sm font-medium text-muted-foreground">Total de Tarefas:</span>
-                                <span class="text-xl font-bold">{{ project.tasks_count || 0 }}</span>
+                                <span
+                                    class="text-sm font-medium text-muted-foreground"
+                                    >Total de Tarefas:</span
+                                >
+                                <span class="text-xl font-bold">{{
+                                    project.tasks_count || 0
+                                }}</span>
                             </div>
                         </div>
                     </div>
@@ -159,7 +180,9 @@ const handleTaskRefresh = () => {
                             </Button>
                         </div>
                         <Deferred data="tasks">
-                            <div class="flex flex-1 flex-col justify-between space-y-4">
+                            <div
+                                class="flex flex-1 flex-col justify-between space-y-4"
+                            >
                                 <TasksDataTable
                                     :tasks="tasks?.data || []"
                                     @refresh="handleTaskRefresh"
@@ -168,7 +191,7 @@ const handleTaskRefresh = () => {
                             </div>
 
                             <template #fallback>
-                                <div class="rounded-md border p-4 space-y-3">
+                                <div class="space-y-3 rounded-md border p-4">
                                     <Skeleton class="h-10 w-full" />
                                     <Skeleton class="h-10 w-full" />
                                     <Skeleton class="h-10 w-full" />
@@ -191,7 +214,9 @@ const handleTaskRefresh = () => {
                 <SheetHeader>
                     <SheetTitle>Criar Nova Tarefa</SheetTitle>
                     <SheetDescription>
-                        Preencha as informações da tarefa para o projeto "{{ project.name }}"
+                        Preencha as informações da tarefa para o projeto "{{
+                            project.name
+                        }}"
                     </SheetDescription>
                 </SheetHeader>
 
@@ -203,8 +228,16 @@ const handleTaskRefresh = () => {
                     @error="handleFormError"
                     v-slot="{ errors, processing }"
                 >
-                    <input type="hidden" name="project_id" :value="project.id" />
-                    <input type="hidden" name="user_id" :value="$page.props.auth.user.id" />
+                    <input
+                        type="hidden"
+                        name="project_id"
+                        :value="project.id"
+                    />
+                    <input
+                        type="hidden"
+                        name="user_id"
+                        :value="$page.props.auth.user.id"
+                    />
 
                     <div class="flex-1 overflow-y-auto">
                         <div class="grid auto-rows-min gap-6 px-4">
@@ -232,10 +265,16 @@ const handleTaskRefresh = () => {
 
                             <div class="space-y-2">
                                 <Label for="task-priority">Prioridade *</Label>
-                                <input type="hidden" name="priority" :value="selectedPriority" />
+                                <input
+                                    type="hidden"
+                                    name="priority"
+                                    :value="selectedPriority"
+                                />
                                 <Select v-model="selectedPriority">
                                     <SelectTrigger id="task-priority">
-                                        <SelectValue placeholder="Selecione a prioridade" />
+                                        <SelectValue
+                                            placeholder="Selecione a prioridade"
+                                        />
                                     </SelectTrigger>
                                     <SelectContent>
                                         <SelectItem value="LOW">Baixa</SelectItem>

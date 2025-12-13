@@ -32,15 +32,35 @@ const props = defineProps<Props>();
         class="mx-auto"
     >
         <PaginationContent v-slot="{ items }" class="flex items-center gap-1">
-            <div v-if="(props.resource.meta?.last_page || props.resource.last_page) === 1">
+            <div
+                v-if="
+                    (props.resource.meta?.last_page ||
+                        props.resource.last_page) === 1
+                "
+            >
                 <div class="mt-4 text-center text-muted-foreground">
                     Mostrando todos os resultados.
                 </div>
             </div>
-            <div v-if="(props.resource.meta?.last_page || props.resource.last_page) !== 1" class="flex items-center gap-1">
+            <div
+                v-if="
+                    (props.resource.meta?.last_page ||
+                        props.resource.last_page) !== 1
+                "
+                class="flex items-center gap-1"
+            >
                 <PaginationPrevious
-                    v-if="props.resource.links?.prev || props.resource.prev_page_url"
-                    @click="() => router.visit(props.resource.links?.prev || props.resource.prev_page_url)"
+                    v-if="
+                        props.resource.links?.prev ||
+                        props.resource.prev_page_url
+                    "
+                    @click="
+                        () =>
+                            router.visit(
+                                props.resource.links?.prev ||
+                                    props.resource.prev_page_url,
+                            )
+                    "
                 />
                 <div
                     v-else
@@ -58,13 +78,18 @@ const props = defineProps<Props>();
                         <Button
                             class="h-10 w-10 p-0"
                             :variant="
-                                item.value === (props.resource.meta?.current_page || props.resource.current_page)
+                                item.value ===
+                                (props.resource.meta?.current_page ||
+                                    props.resource.current_page)
                                     ? 'default'
                                     : 'outline'
                             "
                             @click="
                                 () => {
-                                    const link = props.resource.meta?.links?.[index + 1]?.url || props.resource.links?.[index + 1]?.url;
+                                    const link =
+                                        props.resource.meta?.links?.[index + 1]
+                                            ?.url ||
+                                        props.resource.links?.[index + 1]?.url;
                                     if (link) router.visit(link);
                                 }
                             "
@@ -76,8 +101,17 @@ const props = defineProps<Props>();
                 </template>
 
                 <PaginationNext
-                    v-if="props.resource.links?.next || props.resource.next_page_url"
-                    @click="() => router.visit(props.resource.links?.next || props.resource.next_page_url)"
+                    v-if="
+                        props.resource.links?.next ||
+                        props.resource.next_page_url
+                    "
+                    @click="
+                        () =>
+                            router.visit(
+                                props.resource.links?.next ||
+                                    props.resource.next_page_url,
+                            )
+                    "
                 />
                 <div
                     v-else

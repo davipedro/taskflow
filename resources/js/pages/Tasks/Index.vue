@@ -97,9 +97,12 @@ const handleTaskRefresh = () => {
     router.reload({ only: ['tasks'] });
 };
 
-watch([selectedStatus, selectedPriority, selectedSortBy, selectedSortOrder], () => {
-    applyFilters();
-});
+watch(
+    [selectedStatus, selectedPriority, selectedSortBy, selectedSortOrder],
+    () => {
+        applyFilters();
+    },
+);
 </script>
 
 <template>
@@ -110,10 +113,14 @@ watch([selectedStatus, selectedPriority, selectedSortBy, selectedSortOrder], () 
             class="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4"
         >
             <div class="flex items-center justify-between">
-                <Heading :title="headerTitle" :description="headerDescription" />
+                <Heading
+                    :title="headerTitle"
+                    :description="headerDescription"
+                />
                 <div class="flex items-center gap-2">
                     <span class="text-sm text-muted-foreground">
-                        {{ totalTasks }} {{ totalTasks === 1 ? 'tarefa' : 'tarefas' }}
+                        {{ totalTasks }}
+                        {{ totalTasks === 1 ? 'tarefa' : 'tarefas' }}
                     </span>
                 </div>
             </div>
@@ -143,7 +150,9 @@ watch([selectedStatus, selectedPriority, selectedSortBy, selectedSortOrder], () 
                             <Label for="filter-status">Status</Label>
                             <Select v-model="selectedStatus">
                                 <SelectTrigger id="filter-status">
-                                    <SelectValue placeholder="Todos os status" />
+                                    <SelectValue
+                                        placeholder="Todos os status"
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">Todos</SelectItem>
@@ -159,7 +168,9 @@ watch([selectedStatus, selectedPriority, selectedSortBy, selectedSortOrder], () 
                             <Label for="filter-priority">Prioridade</Label>
                             <Select v-model="selectedPriority">
                                 <SelectTrigger id="filter-priority">
-                                    <SelectValue placeholder="Todas as prioridades" />
+                                    <SelectValue
+                                        placeholder="Todas as prioridades"
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="all">Todas</SelectItem>

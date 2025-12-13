@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import AppLayout from '@/layouts/AppLayout.vue';
 import TaskStatsCards from '@/components/common/TaskStatsCards.vue';
 import TasksDataTable from '@/components/common/TasksDataTable.vue';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem, type Task } from '@/types';
 import { Head, router } from '@inertiajs/vue3';

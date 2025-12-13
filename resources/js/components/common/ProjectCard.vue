@@ -76,7 +76,7 @@ const handleDelete = () => {
 
 <template>
     <Card
-        class="group hover:shadow-lg hover:border-[var(--border-hover)] transition-colors"
+        class="group transition-colors hover:border-[var(--border-hover)] hover:shadow-lg"
         :style="{ '--border-hover': props.project.color || '#6366f1' }"
     >
         <CardHeader
@@ -130,7 +130,7 @@ const handleDelete = () => {
                 variant="ghost"
                 size="sm"
                 @click="handleShow"
-                class="gap-1 cursor-pointer"
+                class="cursor-pointer gap-1"
             >
                 Ver detalhes
                 <ArrowRight :size="14" />

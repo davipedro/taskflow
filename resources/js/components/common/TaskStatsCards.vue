@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Card, CardContent } from '@/components/ui/card';
-import { Clock, ListTodo, CheckCircle2 } from 'lucide-vue-next';
+import { CheckCircle2, Clock, ListTodo } from 'lucide-vue-next';
 
 interface Props {
     stats: {
