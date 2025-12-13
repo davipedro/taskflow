@@ -1,14 +1,6 @@
 <script setup lang="ts">
-import { Badge } from '@/components/ui/badge';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableEmpty,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table';
+import InputError from '@/components/InputError.vue';
+import TaskStatusToggle from '@/components/common/TaskStatusToggle.vue';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -19,6 +11,8 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
     Dialog,
     DialogContent,
@@ -26,20 +20,39 @@ import {
     DialogHeader,
     DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import type { Task } from '@/types';
-import { Form, router } from '@inertiajs/vue3';
-import { Trash2, Pencil } from 'lucide-vue-next';
-import { ref } from 'vue';
-import { toast } from 'vue-sonner';
-import { destroy as destroyTask, update } from '@/routes/tasks';
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select';
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+} from '@/components/ui/sheet';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableEmpty,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from '@/components/ui/table';
 import { Textarea } from '@/components/ui/textarea';
-import InputError from '@/components/InputError.vue';
-import TaskStatusToggle from '@/components/common/TaskStatusToggle.vue';
+import { destroy as destroyTask, update } from '@/routes/tasks';
+import type { Task } from '@/types';
+import { Form, router } from '@inertiajs/vue3';
+import { Pencil, Trash2 } from 'lucide-vue-next';
+import { ref } from 'vue';
+import { toast } from 'vue-sonner';
 
 interface Props {
     tasks: Task[];
@@ -107,11 +120,6 @@ const handleCloseEditTaskSheet = () => {
     editingTask.value = null;
 };
 
-const handleStatusChange = () => {
-    isEditTaskSheetOpen.value = false;
-    editingTask.value = null;
-    emit('refresh');
-};
 
 const getStatusLabel = (status: Task['status']) => {
     const labels = {
@@ -151,12 +159,28 @@ const getPriorityVariant = (priority: Task['priority']) => {
 
 const formatDate = (date: string | null) => {
     if (!date) return '-';
-    return new Date(date).toLocaleDateString('pt-BR');
+
+    const dateOnly = date.split('T')[0];
+    const [year, month, day] = dateOnly.split('-');
+
+    return `${day}/${month}/${year}`;
+};
+
+const formatDateForInput = (date: string | null) => {
+    if (!date) return '';
+    return date.split('T')[0];
 };
 
 const isOverdue = (task: Task) => {
     if (!task.deadline || task.status === 'COMPLETED') return false;
-    return new Date(task.deadline) < new Date();
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const deadline = new Date(task.deadline);
+    deadline.setHours(0, 0, 0, 0);
+
+    return deadline < today;
 };
 </script>
 
@@ -195,9 +219,15 @@ const isOverdue = (task: Task) => {
                         </div>
                     </TableCell>
                     <TableCell>
-                        <Badge :variant="getStatusVariant(task.status)">
-                            {{ getStatusLabel(task.status) }}
-                        </Badge>
+                        <div class="flex items-center gap-2" @click.stop>
+                            <Badge :variant="getStatusVariant(task.status)">
+                                {{ getStatusLabel(task.status) }}
+                            </Badge>
+                            <TaskStatusToggle
+                                :task="task"
+                                @change="emit('refresh')"
+                            />
+                        </div>
                     </TableCell>
                     <TableCell>
                         <Badge :variant="getPriorityVariant(task.priority)">
@@ -207,7 +237,7 @@ const isOverdue = (task: Task) => {
                     <TableCell>
                         <span
                             :class="{
-                                'text-destructive font-semibold':
+                                'font-semibold text-destructive':
                                     isOverdue(task),
                             }"
                         >
@@ -247,7 +277,9 @@ const isOverdue = (task: Task) => {
     <Dialog v-model:open="showDetailsDialog">
         <DialogContent v-if="taskDetails" class="max-w-2xl">
             <DialogHeader>
-                <DialogTitle class="text-2xl">{{ taskDetails.title }}</DialogTitle>
+                <DialogTitle class="text-2xl">{{
+                    taskDetails.title
+                }}</DialogTitle>
                 <DialogDescription v-if="taskDetails.description">
                     {{ taskDetails.description }}
                 </DialogDescription>
@@ -256,15 +288,21 @@ const isOverdue = (task: Task) => {
             <div class="grid gap-6 py-4">
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <h4 class="text-sm font-medium text-muted-foreground">Status</h4>
+                        <h4 class="text-sm font-medium text-muted-foreground">
+                            Status
+                        </h4>
                         <Badge :variant="getStatusVariant(taskDetails.status)">
                             {{ getStatusLabel(taskDetails.status) }}
                         </Badge>
                     </div>
 
                     <div class="space-y-2">
-                        <h4 class="text-sm font-medium text-muted-foreground">Prioridade</h4>
-                        <Badge :variant="getPriorityVariant(taskDetails.priority)">
+                        <h4 class="text-sm font-medium text-muted-foreground">
+                            Prioridade
+                        </h4>
+                        <Badge
+                            :variant="getPriorityVariant(taskDetails.priority)"
+                        >
                             {{ getPriorityLabel(taskDetails.priority) }}
                         </Badge>
                     </div>
@@ -272,11 +310,14 @@ const isOverdue = (task: Task) => {
 
                 <div class="grid grid-cols-2 gap-4">
                     <div class="space-y-2">
-                        <h4 class="text-sm font-medium text-muted-foreground">Prazo</h4>
+                        <h4 class="text-sm font-medium text-muted-foreground">
+                            Prazo
+                        </h4>
                         <p
                             class="text-sm"
                             :class="{
-                                'text-destructive font-semibold': isOverdue(taskDetails),
+                                'font-semibold text-destructive':
+                                    isOverdue(taskDetails),
                             }"
                         >
                             {{ formatDate(taskDetails.deadline) }}
@@ -285,23 +326,33 @@ const isOverdue = (task: Task) => {
 
                     <div class="space-y-2">
                         <h4 class="text-sm font-medium text-muted-foreground">
-                            {{ taskDetails.status === 'COMPLETED' ? 'Concluída em' : 'Criada em' }}
+                            {{
+                                taskDetails.status === 'COMPLETED'
+                                    ? 'Concluída em'
+                                    : 'Criada em'
+                            }}
                         </h4>
                         <p class="text-sm">
-                            {{ taskDetails.status === 'COMPLETED' && taskDetails.completed_at
-                                ? formatDate(taskDetails.completed_at)
-                                : formatDate(taskDetails.created_at)
+                            {{
+                                taskDetails.status === 'COMPLETED' &&
+                                taskDetails.completed_at
+                                    ? formatDate(taskDetails.completed_at)
+                                    : formatDate(taskDetails.created_at)
                             }}
                         </p>
                     </div>
                 </div>
 
                 <div v-if="taskDetails.project" class="space-y-2">
-                    <h4 class="text-sm font-medium text-muted-foreground">Projeto</h4>
+                    <h4 class="text-sm font-medium text-muted-foreground">
+                        Projeto
+                    </h4>
                     <div class="flex items-center gap-2">
                         <div
                             class="h-3 w-3 rounded-full"
-                            :style="{ backgroundColor: taskDetails.project.color }"
+                            :style="{
+                                backgroundColor: taskDetails.project.color,
+                           }"
                         />
                         <p class="text-sm">{{ taskDetails.project.name }}</p>
                     </div>
@@ -380,19 +431,35 @@ const isOverdue = (task: Task) => {
 
                         <div class="space-y-2">
                             <Label>Status</Label>
-                            <TaskStatusToggle :task="editingTask" @change="handleStatusChange" />
+                            <div
+                                class="flex h-10 items-center rounded-md border border-input bg-muted px-3"
+                            >
+                                <Badge
+                                    :variant="getStatusVariant(editingTask.status)"
+                                >
+                                    {{ getStatusLabel(editingTask.status) }}
+                                </Badge>
+                            </div>
                         </div>
 
                         <div class="space-y-2">
                             <Label for="edit-task-priority">Prioridade *</Label>
-                            <input type="hidden" name="priority" :value="selectedPriority" />
+                            <input
+                                type="hidden"
+                                name="priority"
+                                :value="selectedPriority"
+                            />
                             <Select v-model="selectedPriority">
                                 <SelectTrigger id="edit-task-priority">
-                                    <SelectValue placeholder="Selecione a prioridade" />
+                                    <SelectValue
+                                        placeholder="Selecione a prioridade"
+                                    />
                                 </SelectTrigger>
                                 <SelectContent>
                                     <SelectItem value="LOW">Baixa</SelectItem>
-                                    <SelectItem value="MEDIUM">Média</SelectItem>
+                                    <SelectItem value="MEDIUM"
+                                        >Média</SelectItem
+                                    >
                                     <SelectItem value="HIGH">Alta</SelectItem>
                                 </SelectContent>
                             </Select>
@@ -405,7 +472,7 @@ const isOverdue = (task: Task) => {
                                 id="edit-task-deadline"
                                 name="deadline"
                                 type="date"
-                                :model-value="editingTask.deadline || ''"
+                                :model-value="formatDateForInput(editingTask.deadline)"
                             />
                             <InputError :message="errors.deadline" />
                         </div>
