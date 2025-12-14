@@ -14,193 +14,70 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $demoUser = User::factory()->withoutTwoFactor()->create([
+        $demoUser = User::factory()->create([
             'name' => 'Demo User',
             'email' => 'demo@taskflow.com',
             'password' => Hash::make('password'),
         ]);
 
-        $project1 = Project::factory()->forUser($demoUser)->create([
-            'name' => 'Website Redesign',
-            'description' => 'Complete redesign of the company website with modern UI/UX',
-            'color' => '#3B82F6',
-        ]);
+        $projectsData = [
+            ['name' => 'Website Redesign', 'description' => 'Complete redesign of the company website with modern UI/UX', 'color' => '#3B82F6'],
+            ['name' => 'Mobile App Development', 'description' => 'Develop a mobile application for iOS and Android platforms', 'color' => '#10B981'],
+            ['name' => 'API Integration', 'description' => 'Integrate third-party APIs and services', 'color' => '#F59E0B'],
+            ['name' => 'Database Migration', 'description' => 'Migrate legacy database to new architecture', 'color' => '#EF4444'],
+            ['name' => 'Marketing Campaign', 'description' => 'Q1 2025 digital marketing campaign', 'color' => '#8B5CF6'],
+            ['name' => 'E-commerce Platform', 'description' => 'Build online store with payment integration', 'color' => '#EC4899'],
+            ['name' => 'Customer Portal', 'description' => 'Self-service portal for customer support', 'color' => '#06B6D4'],
+            ['name' => 'Analytics Dashboard', 'description' => 'Real-time analytics and reporting dashboard', 'color' => '#14B8A6'],
+            ['name' => 'CI/CD Pipeline', 'description' => 'Automated deployment and testing pipeline', 'color' => '#F97316'],
+            ['name' => 'Documentation Site', 'description' => 'Technical documentation and API reference', 'color' => '#6366F1'],
+            ['name' => 'Performance Optimization', 'description' => 'Improve application speed and efficiency', 'color' => '#84CC16'],
+            ['name' => 'Security Audit', 'description' => 'Comprehensive security review and fixes', 'color' => '#DC2626'],
+            ['name' => 'Cloud Migration', 'description' => 'Migrate infrastructure to AWS/Azure', 'color' => '#0EA5E9'],
+            ['name' => 'Internal Tools', 'description' => 'Build admin and management tools', 'color' => '#A855F7'],
+            ['name' => 'Product Launch', 'description' => 'Prepare for Q2 product launch', 'color' => '#22C55E'],
+        ];
 
-        $project2 = Project::factory()->forUser($demoUser)->create([
-            'name' => 'Mobile App Development',
-            'description' => 'Develop a mobile application for iOS and Android platforms',
-            'color' => '#10B981',
-        ]);
+        $projects = collect($projectsData)->map(function ($data) use ($demoUser) {
+            return Project::factory()->forUser($demoUser)->create($data);
+        });
 
-        $project3 = Project::factory()->forUser($demoUser)->create([
-            'name' => 'API Integration',
-            'description' => null,
-            'color' => '#F59E0B',
-        ]);
+        $tasksPerProject = [8, 7, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 3, 3, 3];
 
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Design homepage mockup',
-            'description' => 'Create high-fidelity mockups for the new homepage layout',
-            'status' => TaskStatus::COMPLETED,
-            'priority' => TaskPriority::HIGH,
-            'deadline' => now()->subDays(5),
-            'completed_at' => now()->subDays(3),
-        ]);
+        foreach ($projects as $index => $project) {
+            $taskCount = $tasksPerProject[$index];
 
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Implement responsive navigation',
-            'description' => 'Build a mobile-friendly navigation menu with hamburger icon',
-            'status' => TaskStatus::IN_PROGRESS,
-            'priority' => TaskPriority::HIGH,
-            'deadline' => now()->addDays(3),
-            'completed_at' => null,
-        ]);
+            for ($i = 0; $i < $taskCount; $i++) {
+                $statuses = [TaskStatus::PENDING, TaskStatus::IN_PROGRESS, TaskStatus::COMPLETED];
+                $priorities = [TaskPriority::LOW, TaskPriority::MEDIUM, TaskPriority::HIGH];
 
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Update content for About Us page',
-            'description' => null,
-            'status' => TaskStatus::PENDING,
-            'priority' => TaskPriority::LOW,
-            'deadline' => now()->addDays(14),
-            'completed_at' => null,
-        ]);
+                $status = fake()->randomElement($statuses);
+                $priority = fake()->randomElement($priorities);
 
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Test cross-browser compatibility',
-            'description' => 'Ensure the website works correctly on all major browsers',
-            'status' => TaskStatus::PENDING,
-            'priority' => TaskPriority::MEDIUM,
-            'deadline' => now()->addDays(10),
-            'completed_at' => null,
-        ]);
+                $isOverdue = fake()->boolean(15);
+                $isCompleted = $status === TaskStatus::COMPLETED;
 
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Set up SEO best practices',
-            'description' => 'Implement meta tags, alt attributes, and sitemap.xml',
-            'status' => TaskStatus::IN_PROGRESS,
-            'priority' => TaskPriority::HIGH,
-            'deadline' => now()->addDays(4),
-            'completed_at' => null,
-        ]);
+                if ($isOverdue && ! $isCompleted) {
+                    $deadline = now()->subDays(fake()->numberBetween(1, 10));
+                } elseif ($isCompleted) {
+                    $deadline = now()->subDays(fake()->numberBetween(1, 30));
+                } else {
+                    $deadline = fake()->boolean(70) ? now()->addDays(fake()->numberBetween(1, 30)) : null;
+                }
 
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Conduct user testing sessions',
-            'description' => 'Organize sessions to gather feedback on the new design',
-            'status' => TaskStatus::PENDING,
-            'priority' => TaskPriority::MEDIUM,
-            'deadline' => now()->addDays(12),
-            'completed_at' => null,
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Migrate content from old site',
-            'description' => 'Transfer all blog posts and pages to the new website',
-            'status' => TaskStatus::COMPLETED,
-            'priority' => TaskPriority::HIGH,
-            'deadline' => now()->subDays(2),
-            'completed_at' => now()->subDay(),
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Set up Google Analytics',
-            'description' => 'Integrate Google Analytics to track website traffic and user behavior',
-            'status' => TaskStatus::IN_PROGRESS,
-            'priority' => TaskPriority::MEDIUM,
-            'deadline' => now()->addDays(6),
-            'completed_at' => null,
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Create blog post templates',
-            'description' => null,
-            'status' => TaskStatus::PENDING,
-            'priority' => TaskPriority::LOW,
-            'deadline' => now()->addDays(20),
-            'completed_at' => null,
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Set up email newsletter signup',
-            'description' => 'Integrate Mailchimp signup form on the website',
-            'status' => TaskStatus::COMPLETED,
-            'priority' => TaskPriority::MEDIUM,
-            'deadline' => now()->subDays(7),
-            'completed_at' => now()->subDays(5),
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project1)->create([
-            'title' => 'Optimize images for web',
-            'description' => 'Compress and convert images to WebP format for better performance',
-            'status' => TaskStatus::PENDING,
-            'priority' => TaskPriority::MEDIUM,
-            'deadline' => now()->addDays(7),
-            'completed_at' => null,
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project2)->create([
-            'title' => 'Setup React Native project',
-            'description' => 'Initialize new React Native project with necessary dependencies',
-            'status' => TaskStatus::COMPLETED,
-            'priority' => TaskPriority::HIGH,
-            'deadline' => now()->subDays(10),
-            'completed_at' => now()->subDays(8),
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project2)->create([
-            'title' => 'Implement user authentication',
-            'description' => 'Add login and registration screens with JWT authentication',
-            'status' => TaskStatus::IN_PROGRESS,
-            'priority' => TaskPriority::HIGH,
-            'deadline' => now()->addDays(5),
-            'completed_at' => null,
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project2)->create([
-            'title' => 'Create settings page',
-            'description' => null,
-            'status' => TaskStatus::PENDING,
-            'priority' => TaskPriority::LOW,
-            'deadline' => now()->addDays(15),
-            'completed_at' => null,
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project3)->create([
-            'title' => 'Document API endpoints',
-            'description' => 'Create comprehensive documentation for all REST API endpoints',
-            'status' => TaskStatus::PENDING,
-            'priority' => TaskPriority::MEDIUM,
-            'deadline' => null,
-            'completed_at' => null,
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project3)->create([
-            'title' => 'Write integration tests',
-            'description' => 'Add automated tests for third-party API integrations',
-            'status' => TaskStatus::PENDING,
-            'priority' => TaskPriority::MEDIUM,
-            'deadline' => now()->addDays(10),
-            'completed_at' => null,
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project1)->overdue()->create([
-            'title' => 'Fix mobile menu bug',
-            'description' => 'Menu not closing properly on mobile devices',
-            'priority' => TaskPriority::HIGH,
-        ]);
-
-        Task::factory()->forUser($demoUser)->forProject($project2)->create([
-            'title' => 'Add push notifications',
-            'description' => 'Implement Firebase Cloud Messaging for push notifications',
-            'status' => TaskStatus::PENDING,
-            'priority' => TaskPriority::LOW,
-            'deadline' => now()->addDays(20),
-            'completed_at' => null,
-        ]);
+                Task::factory()->forUser($demoUser)->forProject($project)->create([
+                    'status' => $status,
+                    'priority' => $priority,
+                    'deadline' => $deadline,
+                    'completed_at' => $isCompleted ? now()->subDays(fake()->numberBetween(1, 20)) : null,
+                ]);
+            }
+        }
 
         $this->command->info('✅ Demo user created:');
         $this->command->info('   Email: demo@taskflow.com');
         $this->command->info('   Password: password');
         $this->command->info('');
-        $this->command->info('✅ Created 3 projects and 10 tasks');
+        $this->command->info("✅ Created {$projects->count()} projects and 75 tasks");
     }
 }
