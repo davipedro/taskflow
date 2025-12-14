@@ -83,13 +83,6 @@ const handleCreateTaskSuccess = () => {
     router.reload({ only: ['tasks', 'project'] });
 };
 
-const handleFormError = (errors: Record<string, string[]>) => {
-    isCreateTaskSheetOpen.value = false;
-    console.error('Form errors:', errors);
-    toast.error(`Erro: ${Object.values(errors).flat().join(', ')}`);
-    router.reload({ only: ['tasks', 'project'] });
-};
-
 const handleCloseCreateTaskSheet = () => {
     isCreateTaskSheetOpen.value = false;
 };
@@ -225,7 +218,6 @@ const handleTaskRefresh = () => {
                     method="post"
                     class="flex flex-1 flex-col"
                     @success="handleCreateTaskSuccess"
-                    @error="handleFormError"
                     v-slot="{ errors, processing }"
                 >
                     <input

@@ -47,10 +47,6 @@ const handleSuccess = () => {
     toast.success('Projeto atualizado com sucesso!');
 };
 
-const handleError = () => {
-    toast.error('Ocorreu um erro ao atualizar o projeto.');
-};
-
 const handleClose = () => {
     emit('update:open', false);
 };
@@ -70,7 +66,6 @@ const handleClose = () => {
                 v-bind="update.form(project.id)"
                 class="space-y-6"
                 @success="handleSuccess"
-                @error="handleError"
                 v-slot="{ errors, processing }"
             >
                 <div class="space-y-2">
