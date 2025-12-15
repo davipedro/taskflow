@@ -8,6 +8,9 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { useDateFormatter } from '@/composables/useDateFormatter';
+import { useTaskPriority } from '@/composables/useTaskPriority';
+import { useTaskStatus } from '@/composables/useTaskStatus';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { Task } from '@/types';
 import { Head, router } from '@inertiajs/vue3';
@@ -19,66 +22,9 @@ interface Props {
 
 defineProps<Props>();
 
-const getStatusLabel = (status: Task['status']) => {
-    const labels = {
-        PENDING: 'Pendente',
-        IN_PROGRESS: 'Em Progresso',
-        COMPLETED: 'Concluída',
-    };
-    return labels[status];
-};
-
-const getStatusVariant = (status: Task['status']) => {
-    const variants = {
-        PENDING: 'secondary',
-        IN_PROGRESS: 'default',
-        COMPLETED: 'outline',
-    };
-    return variants[status] as 'default' | 'secondary' | 'outline';
-};
-
-const getPriorityLabel = (priority: Task['priority']) => {
-    const labels = {
-        LOW: 'Baixa',
-        MEDIUM: 'Média',
-        HIGH: 'Alta',
-    };
-    return labels[priority];
-};
-
-const getPriorityVariant = (priority: Task['priority']) => {
-    const variants = {
-        LOW: 'secondary',
-        MEDIUM: 'default',
-        HIGH: 'destructive',
-    };
-    return variants[priority] as 'default' | 'secondary' | 'destructive';
-};
-
-const formatDate = (date: string | null) => {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-    });
-};
-
-const formatDateTime = (date: string | null) => {
-    if (!date) return '-';
-    return new Date(date).toLocaleDateString('pt-BR', {
-        day: '2-digit',
-        month: 'long',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-    });
-};
-
-const isOverdue = (task: Task) => {
-    if (!task.deadline || task.status === 'COMPLETED') return false;
-    return new Date(task.deadline) < new Date();
-};
+const { getStatusLabel, getStatusVariant } = useTaskStatus();
+const { getPriorityLabel, getPriorityVariant } = useTaskPriority();
+const { formatDateLong: formatDate, formatDateTime, isOverdue } = useDateFormatter();
 
 const goBack = () => {
     router.visit('/tasks');

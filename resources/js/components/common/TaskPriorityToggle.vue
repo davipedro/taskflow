@@ -6,6 +6,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { useTaskPriority } from '@/composables/useTaskPriority';
 import { updatePriority } from '@/routes/tasks';
 import type { Task } from '@/types';
 import { router } from '@inertiajs/vue3';
@@ -22,6 +23,8 @@ const emit = defineEmits<{
     change: [];
 }>();
 
+const { getPriorityLabel } = useTaskPriority();
+
 const selectedPriority = ref<Task['priority']>(props.task.priority);
 
 watch(
@@ -30,15 +33,6 @@ watch(
         selectedPriority.value = newPriority;
     },
 );
-
-const getPriorityLabel = (priority: Task['priority']) => {
-    const labels = {
-        LOW: 'Baixa',
-        MEDIUM: 'Média',
-        HIGH: 'Alta',
-    };
-    return labels[priority];
-};
 
 const handlePriorityChange = (priority: Task['priority']) => {
     if (priority === props.task.priority) return;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
+import { useTaskStatus } from '@/composables/useTaskStatus';
 import { updateStatus } from '@/routes/tasks';
 import type { Task } from '@/types';
 import { router } from '@inertiajs/vue3';
@@ -17,26 +18,10 @@ const emit = defineEmits<{
     change: [];
 }>();
 
-const getStatusLabel = (status: Task['status']) => {
-    const labels = {
-        PENDING: 'Pendente',
-        IN_PROGRESS: 'Em Progresso',
-        COMPLETED: 'Concluída',
-    };
-    return labels[status];
-};
-
-const getNextStatusLabel = (status: Task['status']) => {
-    const nextLabels = {
-        PENDING: 'Em Progresso',
-        IN_PROGRESS: 'Concluída',
-        COMPLETED: null,
-    };
-    return nextLabels[status];
-};
+const { getStatusLabel, getNextStatusLabel, getNextStatus, canTransition: canTransitionStatus } = useTaskStatus();
 
 const canTransition = computed(() => {
-    return props.task.status !== 'COMPLETED';
+    return canTransitionStatus(props.task.status);
 });
 
 const nextStatusLabel = computed(() => {
@@ -44,11 +29,7 @@ const nextStatusLabel = computed(() => {
 });
 
 const handleNextStatus = () => {
-    const nextStatus = {
-        PENDING: 'IN_PROGRESS',
-        IN_PROGRESS: 'COMPLETED',
-        COMPLETED: null,
-    }[props.task.status];
+    const nextStatus = getNextStatus(props.task.status);
 
     if (!nextStatus) return;
 

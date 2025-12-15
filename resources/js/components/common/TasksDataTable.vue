@@ -2,6 +2,9 @@
 import InputError from '@/components/InputError.vue';
 import TaskPriorityToggle from '@/components/common/TaskPriorityToggle.vue';
 import TaskStatusToggle from '@/components/common/TaskStatusToggle.vue';
+import { useDateFormatter } from '@/composables/useDateFormatter';
+import { useTaskPriority } from '@/composables/useTaskPriority';
+import { useTaskStatus } from '@/composables/useTaskStatus';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -121,68 +124,9 @@ const handleCloseEditTaskSheet = () => {
     editingTask.value = null;
 };
 
-
-const getStatusLabel = (status: Task['status']) => {
-    const labels = {
-        PENDING: 'Pendente',
-        IN_PROGRESS: 'Em Progresso',
-        COMPLETED: 'Concluída',
-    };
-    return labels[status];
-};
-
-const getStatusVariant = (status: Task['status']) => {
-    const variants = {
-        PENDING: 'secondary',
-        IN_PROGRESS: 'default',
-        COMPLETED: 'outline',
-    };
-    return variants[status] as 'default' | 'secondary' | 'outline';
-};
-
-const getPriorityLabel = (priority: Task['priority']) => {
-    const labels = {
-        LOW: 'Baixa',
-        MEDIUM: 'Média',
-        HIGH: 'Alta',
-    };
-    return labels[priority];
-};
-
-const getPriorityVariant = (priority: Task['priority']) => {
-    const variants = {
-        LOW: 'secondary',
-        MEDIUM: 'default',
-        HIGH: 'destructive',
-    };
-    return variants[priority] as 'default' | 'secondary' | 'destructive';
-};
-
-const formatDate = (date: string | null) => {
-    if (!date) return '-';
-
-    const dateOnly = date.split('T')[0];
-    const [year, month, day] = dateOnly.split('-');
-
-    return `${day}/${month}/${year}`;
-};
-
-const formatDateForInput = (date: string | null) => {
-    if (!date) return '';
-    return date.split('T')[0];
-};
-
-const isOverdue = (task: Task) => {
-    if (!task.deadline || task.status === 'COMPLETED') return false;
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const deadline = new Date(task.deadline);
-    deadline.setHours(0, 0, 0, 0);
-
-    return deadline < today;
-};
+const { getStatusLabel, getStatusVariant } = useTaskStatus();
+const { getPriorityLabel, getPriorityVariant } = useTaskPriority();
+const { formatDate, formatDateForInput, isOverdue } = useDateFormatter();
 </script>
 
 <template>
