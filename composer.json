@@ -48,9 +48,37 @@
             "npm install",
             "npm run build"
         ],
+        "setup:sail": [
+            "@php -r \"file_exists('.env') || copy('.env.example', '.env');\"",
+            "@composer install --ignore-platform-reqs",
+            "./vendor/bin/sail up -d",
+            "./vendor/bin/sail artisan key:generate",
+            "./vendor/bin/sail artisan migrate --seed",
+            "./vendor/bin/sail npm install",
+            "./vendor/bin/sail npm run build",
+            "@echo ''",
+            "@echo '🎉 TaskFlow configurado com sucesso!'",
+            "@echo ''",
+            "@echo '📍 URLs Importantes:'",
+            "@echo '   🌐 Aplicação:  http://localhost'",
+            "@echo '   📧 MailPit:    http://localhost:8025'",
+            "@echo ''",
+            "@echo '👤 Usuário Demo:'",
+            "@echo '   📧 Email: demo@taskflow.com'",
+            "@echo '   🔑 Senha: password'",
+            "@echo ''",
+            "@echo '🚀 Para iniciar o desenvolvimento:'",
+            "@echo '   ./vendor/bin/sail composer run dev'",
+            "@echo '   (Inicia: Servidor + Queue Worker + Vite)'",
+            "@echo ''"
+        ],
         "dev": [
             "Composer\\Config::disableProcessTimeout",
             "npx concurrently -c \"#93c5fd,#c4b5fd,#fdba74\" \"php artisan serve\" \"php artisan queue:listen --tries=1\" \"npm run dev\" --names='server,queue,vite'"
+        ],
+        "fresh": [
+            "./vendor/bin/sail artisan migrate:fresh --seed",
+            "@echo '✅ Banco de dados resetado com sucesso!'"
         ],
         "dev:ssr": [
             "npm run build:ssr",
