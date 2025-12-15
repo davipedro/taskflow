@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import InputError from '@/components/InputError.vue';
+import TaskPriorityToggle from '@/components/common/TaskPriorityToggle.vue';
 import TaskStatusToggle from '@/components/common/TaskStatusToggle.vue';
 import {
     AlertDialog,
@@ -230,9 +231,12 @@ const isOverdue = (task: Task) => {
                         </div>
                     </TableCell>
                     <TableCell>
-                        <Badge :variant="getPriorityVariant(task.priority)">
-                            {{ getPriorityLabel(task.priority) }}
-                        </Badge>
+                        <div @click.stop>
+                            <TaskPriorityToggle
+                                :task="task"
+                                @change="emit('refresh')"
+                            />
+                        </div>
                     </TableCell>
                     <TableCell>
                         <span
