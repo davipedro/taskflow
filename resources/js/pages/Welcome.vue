@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Button } from '@/components/ui/button';
 import { dashboard, login, register } from '@/routes';
-import { ArrowRight, Layers } from 'lucide-vue-next';
+import { ArrowRight } from 'lucide-vue-next';
 import { Head, Link } from '@inertiajs/vue3';
 
 withDefaults(
@@ -32,14 +32,9 @@ withDefaults(
                 >
                     <Link
                         :href="dashboard()"
-                        class="flex items-center gap-2 text-xl font-bold tracking-tight text-white transition-opacity hover:opacity-90"
+                        class="text-xl font-bold tracking-tight text-white transition-opacity hover:opacity-90"
                     >
-                        <div
-                            class="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-black shadow-lg shadow-white/10"
-                        >
-                            <Layers :size="20" :stroke-width="2.5" />
-                        </div>
-                        <span>TaskFlow</span>
+                        TaskFlow
                     </Link>
 
                     <nav class="flex items-center gap-6">
